@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duapp.stonegate.mikuserver.dao.QuestionDao">
+
+    <resultMap id="questionResultMap" type="Question">
+        <id property="answerId" column="answer_id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="question" column="question"/>
+        <result property="askCount" column="ask_count"/>
+        <result property="answerCount" column="answer_count"/>
+    </resultMap>
+
+    <!--根据session_id查询评论列表-->
+    <select id="getQuestionById" parameterType="int" resultMap="questionResultMap" resultType="Question">
+        <![CDATA[
+               SELECT question_id,question,answer_count,ask_count
+               from miku_question where question_id = #{questionId}
+        ]]>
+    </select>
+    <select id="getAllQuestion" resultMap="questionResultMap" resultType="Question">
+        <![CDATA[
+               SELECT question_id,question,answer_count,ask_count
+               from miku_question
+        ]]>
+    </select>
+    <select id="getMaxAnswerDBQuestion" resultMap="questionResultMap" resultType="Question">
+        <![CDATA[
+              SELECT question_id,question,answer_count,ask_count
+              from miku_question
+              where  answer_count= (select max(answer_count)
+                                    from miku_question )
+        ]]>
+    </select>
+    <select id="getMinAnswerDbQuestion" resultMap="questionResultMap" resultType="Question">
+        <![CDATA[
+              SELECT question_id,question,answer_count,ask_count
+              from miku_question
+              where  answer_count= (select MIN(answer_count)
+                                    from miku_question )
+        ]]>
+    </select>
+    <insert id="insertQuestion" parameterType="Question" keyProperty="questionId">
+        <![CDATA[
+              INSERT INTO miku_question(question,answer_count,ask_count)
+              values(#{question},
+                     #{answerCount},
+                     #{askCount}
+                     )
+        ]]>
+    </insert>
+    <update id="updateQuestion" parameterType="Question">
+        <![CDATA[
+               UPDATE miku_question
+               SET question = #{question},
+                   answer_count = #{answerCount},
+                   ask_count = #{askCount}
+               where question_id =#{questionId}
+        ]]>
+    </update>
+</mapper>

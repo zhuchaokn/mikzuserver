@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duapp.stonegate.mikuserver.dao.AnswerDao">
+
+    <resultMap id="answerResultMap" type="Answer">
+        <id property="answerId" column="answer_id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="answer" column="answer"/>
+        <result property="passWord" column="password"/>
+        <result property="refCount" column="ref_count"/>
+    </resultMap>
+
+    <!--根据session_id查询评论列表-->
+    <select id="getAllAnswerByQuestionId" parameterType="int" resultMap="answerResultMap" resultType="Answer">
+        <![CDATA[
+                 SELECT answer_id,question_id,answer,ref_count
+                 from miku_answer where question_id = #{questionId}
+        ]]>
+    </select>
+    <select id="getMaxRefDBAnswerByQuestionId" resultMap="answerResultMap" resultType="Answer" parameterType="int">
+        <![CDATA[
+                SELECT answer_id,question_id,answer,ref_count
+			    from miku_answer where question_id =#{questionId}
+				and ref_count = (select max(ref_count)
+				                 from miku_answer
+				                 where question_id = #{questionId}
+				                 )
+        ]]>
+    </select>
+    <insert id="insertAnswer" parameterType="Answer" keyProperty="answerId">
+        <![CDATA[
+              INSERT INTO miku_answer(question_id,answer,ref_count)
+              values(#{questionId},#{answer},#{refCount})
+        ]]>
+    </insert>
+    <update id="updateAnswer" parameterType="Answer">
+        <![CDATA[
+                UPDATE miku_answer
+                SET question_id = #{questionId},
+				    answer = #{answer},
+				    ref_count = #{refCount},
+				where answer_id = #{answerId}
+        ]]>
+    </update>
+</mapper>
